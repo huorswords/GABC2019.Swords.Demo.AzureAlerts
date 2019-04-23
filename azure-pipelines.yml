@@ -17,7 +17,10 @@ variables:
 steps:
 - script: dotnet build src/*sln --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
-  
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.BinariesDirectory)'
 - task: PublishBuildArtifacts@1
   inputs:
     ArtifactName: 'drop'

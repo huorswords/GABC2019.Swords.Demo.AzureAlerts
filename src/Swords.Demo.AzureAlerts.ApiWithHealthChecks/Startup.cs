@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
+using Swords.Demo.AzureAlerts.ApiWithHealthChecks.HealthChecks;
+using Swords.Demo.AzureAlerts.ApiWithHealthChecks.Services;
 using Swords.Demo.AzureAlerts.Common;
 
 namespace Swords.Demo.AzureAlerts.ApiWithHealthChecks
@@ -21,6 +22,9 @@ namespace Swords.Demo.AzureAlerts.ApiWithHealthChecks
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IPrimeSearcher, PrimeSearcher>();
+            services.AddSingleton<IHealthCheckCounter, HealthCheckCounter>(factory => new HealthCheckCounter(10));
+            services.AddHealthChecks()
+                    .AddCheck<CounterHealthCheck>("example_health_check"); ;
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
@@ -37,6 +41,7 @@ namespace Swords.Demo.AzureAlerts.ApiWithHealthChecks
                 app.UseHsts();
             }
 
+            app.UseHealthChecks("/health");
             app.UseHttpsRedirection();
             app.UseMvc();
         }

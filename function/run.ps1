@@ -17,7 +17,7 @@ else {
 
     # Password for connection to Azure via Function Application Settings
     $pw = $env:AzureAutomationPWD
-    $key = Get-Content 'D:\home\site\wwwroot\reboot\4sessions.key'
+    $key = Get-Content 'D:\home\site\wwwroot\swords-reboot\gabc-alerts-2019.key'
     $password = $pw | ConvertTo-SecureString -key $key
     $credentials = New-Object System.Management.Automation.PSCredential $username,$password
     $AzureRMAccount = Add-AzureRmAccount -Credential $credentials -ServicePrincipal -TenantId $env:AzureAutomationTenantID

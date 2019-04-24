@@ -10,25 +10,20 @@ $ErrorActionPreference = "stop"
 
 if ($WebhookData)
 {
+	$json = $WebhookData.RequestBody | ConvertFrom-Json
+	
 	$regexExpression = '\/(?:subscriptions)\/(?<SUBSCRIPTION>[a-z0-9]{8}\-[a-z0-9]{4}\-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})\/(?:resourcegroups)\/(?<RESOURCEGROUP>[a-z\-0-9\.]*)\/(?:providers\/microsoft.web\/sites)\/(?<APPSERVICE>[a-z\-0-9\.]*)'
 	$alertPattern = [Regex]::new($regexExpression)
+	$matches = $alertPattern.Matches($json.data.essentials.alertTargetIDs)
 
-	# Get the data object from WebhookData.
-	$WebhookBody = (ConvertFrom-Json -InputObject $WebhookData.RequestBody)
-	$matches = $alertPattern.Matches($WebhookBody.essentials.alertTargetIDs[0])
-
-	Write-Output $WebhookData.data.essentials.monitorCondition
-	Write-Output $matches['SUBSCRIPTION']
-	Write-Output $matches['RESOURCEGROUP']
-	Write-Output $matches['APPSERVICE']
+    $resourceGroupName = $matches.Groups[2]
+	$appService = $matches.Groups[3]
 	
 	if ($WebhookData.data.essentials.monitorCondition -eq "Resolved") {	
 		Write-output "Status is " $WebhookData.data.essentials.monitorCondition
 	}
 	else {
-		Write-Output $matches['SUBSCRIPTION']
-		Write-Output $matches['RESOURCEGROUP']
-		Write-Output $matches['APPSERVICE']	
-	}
-	
+		Write-Output $resourceGroupName
+		Write-Output $appService	
+	}	
 }
